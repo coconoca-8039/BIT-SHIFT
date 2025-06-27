@@ -9,14 +9,14 @@
 uint16_t original = 0x10;
 /*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*/
 
-int hexToBinary(uint64_t hex){
+int hexToBinary(uint16_t hex){
     for (int i = 15; i >= 0; i--){
         if ((hex & (1 << i))){  // // 16進数の値と、1を左にiビットシフトした値をAND演算
             printf("1");
-        }
-        else{
+        }else{
             printf("0");
         }
+
         if (i % 4 == 0){ // 4ビットごとにスペースを挿入
             printf(" ");
         }
@@ -25,11 +25,11 @@ int hexToBinary(uint64_t hex){
     return 0;
 }
 
-uint16_t rightShift(uint64_t value, int shiftAmount){
+uint16_t rightShift(uint16_t value, int shiftAmount){
     return value >> shiftAmount;
 }
 
-uint16_t leftShift(uint64_t value, int shiftAmount){
+uint16_t leftShift(uint16_t value, int shiftAmount){
     return value << shiftAmount;
 }
 
@@ -98,6 +98,5 @@ int main(){
     hexToBinary(set_value);
     NEWLINE;
 
- 
     return 0;
 }
