@@ -42,19 +42,6 @@ void turnoffLCD() {
     }
 }
 
-// // 小数の位置を探す関数
-// int getDpIndex(float value) {
-//     if (value >= 1000) {
-//         return 3;
-//     } else if (value >= 100) {
-//         return 3;
-//     } else if (value >= 10) {
-//         return 2;
-//     } else {
-//         return 0;
-//     }
-// }
-
 void setup() {
   // ピンの初期設定
   for (int i = 0; i < 8; i++) {
@@ -108,11 +95,6 @@ void loop() {
 
     // 配列に格納
     int digits[4] = {0, 0, 0, 0};
-    // int scaledValue = (int)(value * 10 + 0.5);  // 四捨五入付き 小数点第1位まで見せる
-    // digits[0] = (scaledValue / 1000) % 10;
-    // digits[1] = (scaledValue / 100) % 10;
-    // digits[2] = (scaledValue / 10) % 10;
-    // digits[3] = scaledValue % 10;
     digits[0] = value / 1000;          // 千の位
     digits[1] = (value / 100) % 10;    // 百の位
     digits[2] = (value / 10) % 10;     // 十の位
@@ -144,13 +126,6 @@ void loop() {
             digitalWrite(segPins[s], LOW);
         }
         }
-
-        // // 小数点の点灯
-        // if (d == dpIndex) {
-        // digitalWrite(segPins[7], HIGH);
-        // } else {
-        // digitalWrite(segPins[7], LOW);
-        // }
 
         // 不要なピンの消灯
         digitalWrite(digitPins[d], LOW);
