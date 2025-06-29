@@ -51,6 +51,8 @@ void setup() {
     pinMode(digitPins[i], OUTPUT);
   }
 
+  pinMode(7, OUTPUT); // テスト用
+
   // I2Cの設定
   Serial.begin(115200);
   while (!Serial);
@@ -60,77 +62,64 @@ void setup() {
 }
 
 void loop() {
-  // I2Cのデバッグ用
-  // if (newData) {
-  //   char buf[5];
-  //   noInterrupts();
-  //   memcpy(buf, rxBuf, sizeof(rxBuf));
-  //   interrupts();
+  char buf[5];
+  noInterrupts();
+  memcpy(buf, rxBuf, sizeof(rxBuf));
+  interrupts();
 
-  //   value = atof(buf);
+  if(newData == true){
+      value = atof(buf);
+      Serial.print("Tx value: ");
+      Serial.println(value);
+  }
 
-  //   Serial.print("Received: ");
-  //   Serial.println(buf);
+  // 配列に格納
+  int digits[4] = {0, 0, 0, 0};
+  digits[0] = value / 1000;          // 千の位
+  digits[1] = (value / 100) % 10;    // 百の位
+  digits[2] = (value / 10) % 10;     // 十の位
+  digits[3] = value % 10;            // 一の位
 
-  //   Serial.print("Tx value: ");
-  //   Serial.println(value);
+  bool leadingZero = false;
 
-  //   newData = false;
-  // }
+  if((digits[0] == 0) && (digits[1] == 0)){
+    leadingZero = true;
+    digitalWrite(7, HIGH);
+  }else{
+    digitalWrite(7, LOW);
+  }
 
-    // // 小数点探し
-    // int dpIndex = 0;
-    // dpIndex = getDpIndex(value);
+  // デバッグ用
+  if(newData == true){
+      Serial.print("digits: ");
+      for (int i = 0; i < 4; i++) {
+      Serial.print(digits[i]);
+      if (i != 3) {
+          Serial.print(", ");
+      }
+      }
+      Serial.println();
+  }
 
-    char buf[5];
-    noInterrupts();
-    memcpy(buf, rxBuf, sizeof(rxBuf));
-    interrupts();
+  newData = false;
+  
+  for (int d = 0; d < 4; d++) {
 
-    if(newData == true){
-        value = atof(buf);
-        Serial.print("Tx value: ");
-        Serial.println(value);
-    }
+      // 全消灯
+      turnoffLCD();
 
-    // 配列に格納
-    int digits[4] = {0, 0, 0, 0};
-    digits[0] = value / 1000;          // 千の位
-    digits[1] = (value / 100) % 10;    // 百の位
-    digits[2] = (value / 10) % 10;     // 十の位
-    digits[3] = value % 10;            // 一の位
-
-    // デバッグ用
-    if(newData == true){
-        Serial.print("digits: ");
-        for (int i = 0; i < 4; i++) {
-        Serial.print(digits[i]);
-        if (i != 3) {
-            Serial.print(", ");
-        }
-        }
-        Serial.println();
-    }
-
-    newData = false;
-
-    for (int d = 0; d < 4; d++) {
-
-        // 全消灯
-        turnoffLCD();
-
-        for (int s = 0; s < 8; s++) {
+      for (int s = 0; s < 8; s++) {
         if (numbers[digits[d]][s] == 1) { 
             digitalWrite(segPins[s], HIGH);
         } else {
             digitalWrite(segPins[s], LOW);
         }
-        }
+      }
 
-        // 不要なピンの消灯
-        digitalWrite(digitPins[d], LOW);
+      // 不要なピンの消灯
+      digitalWrite(digitPins[d], LOW);
 
-        delay(5);  // ミリ秒 1000ms=1s
-    }
+      delay(5);  // ミリ秒 1000ms=1s
+  }
   
 }

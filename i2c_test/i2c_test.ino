@@ -13,6 +13,7 @@ Adafruit_BME280 bme;
 uint16_t globalTempInt = 0;
 uint16_t globalHumidInt = 0;
 uint16_t globalPressInt = 0;
+const int toggle_timer = 100;
 
 void setup() {
   Wire.begin();                
@@ -28,46 +29,50 @@ void setup() {
 
 void loop() {
   unsigned long now = millis();
-  static int xxx = 0;
+  static int displayToggleTimer = 0;
   char buf[6];                 // 最大4桁 + 終端文字
+  int len = 0;
 
   // 0.1秒周期
   if (now - last100ms >= INTERVAL_100MS) {
     last100ms = now;
 
-    // xxx++;
-    // if(xxx == 10000){
-    //   xxx = 0;
-    // }
+    displayToggleTimer++;
+    if(displayToggleTimer == toggle_timer){
+      displayToggleTimer = 0;
+    }
 
     readBME280Data();
     
-
-    int len = sprintf(buf, "%d", globalHumidInt);
-
+    if(displayToggleTimer <= toggle_timer / 2){
+      len = sprintf(buf, "%d", globalTempInt);
+    }else{
+      len = sprintf(buf, "%d", globalHumidInt);
+    }
+    
     // スレーブへ送信（ヌル文字は含めず、文字数分だけ送る)
     Wire.beginTransmission(SLAVE_ADDR);
     Wire.write((uint8_t*)buf, len);
     Wire.endTransmission();
 
     // 送った内容をシリアルに表示
-    // Serial.print("Sent: ");
-    // Serial.println(buf);
+    Serial.print("Sent: ");
+    Serial.println(buf);
   }
 
   if (now - last10sec >= INTERVAL_10SEC) {
     last10sec = now;
 
-    readBME280Data();
-    Serial.print("temp: ");
-    Serial.print(globalTempInt);
-    Serial.println(" ℃");
-    Serial.print("humi: ");
-    Serial.print(globalHumidInt);
-    Serial.println(" %");
-    Serial.print("press: ");
-    Serial.print(globalPressInt);
-    Serial.println(" hPa");
+    // readBME280Data();
+    // Serial.print("temp: ");
+    // Serial.print(globalTempInt);
+    // Serial.println(" ℃");
+    // Serial.print("humi: ");
+    // Serial.print(globalHumidInt);
+    // Serial.println(" %");
+    // Serial.print("press: ");
+    // Serial.print(globalPressInt);
+    // Serial.println(" hPa");
   }
 }
 
